@@ -32,7 +32,9 @@ describe('dev server', () => {
 test('dev reload injects an SSE client and streams events', async () => {
   const live = createServer(0, { reload: true });
   const base = `http://localhost:${live.port}`;
-  expect(await (await fetch(`${base}/`)).text()).toContain('/__reload');
+  const page = await (await fetch(`${base}/`)).text();
+  expect(page).toContain('/__reload');
+  expect(page).not.toContain('cloudflareinsights');
   const res = await fetch(`${base}/__reload`);
   expect(res.headers.get('content-type')).toBe('text/event-stream');
   await res.body!.cancel();
@@ -52,6 +54,7 @@ test('the build emits a static site that keeps three external', async () => {
   await build(out);
   const html = await Bun.file(`${out}/index.html`).text();
   expect(html).toContain('src="main.js"');
+  expect(html).toContain('static.cloudflareinsights.com/beacon.min.js');
   expect(await Bun.file(`${out}/style.css`).exists()).toBe(true);
   expect(await Bun.file(`${out}/main.js`).text()).toMatch(/from\s*"three"/);
 });
