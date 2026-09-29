@@ -1,0 +1,24 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["unicorn", "oxc", "import"],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "warn"
+  },
+  "env": {
+    "browser": true,
+    "es2024": true
+  },
+  "rules": {
+    "no-unused-vars": "error",
+    "eqeqeq": "error",
+    "prefer-const": "error"
+  },
+  "overrides": [
+    {
+      "files": ["server.ts", "build.ts", "tests/**"],
+      "globals": { "Bun": "readonly" }
+    }
+  ],
+  "ignorePatterns": ["node_modules", "dist"]
+}

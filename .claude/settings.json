@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/scripts/claude-post-edit.sh",
+            "timeout": 30,
+            "statusMessage": "oxfmt + oxlint"
+          }
+        ]
+      }
+    ]
+  },
+  "sandbox": {
+    "excludedCommands": [
+      "bun run check",
+      "bun run lint *",
+      "bun run lint",
+      "bun run format *",
+      "bun run format",
+      "bun run typecheck",
+      "./node_modules/.bin/oxlint *",
+      "./node_modules/.bin/oxfmt *",
+      "./node_modules/.bin/tsc *"
+    ]
+  }
+}

@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>CV — The avenue</title>
+    <meta name="description" content="Interactive CV: explore the avenue, every building is a job." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Press+Start+2P&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+        }
+      }
+    </script>
+    <script type="module" src="src/main.ts"></script>
+  </head>
+  <body>
+    <canvas id="scene" aria-label="3D avenue: every building is a job"></canvas>
+
+    <div id="hud">
+      <div class="id-card"><strong data-name></strong><span data-title></span></div>
+      <div class="hud-actions">
+        <button class="pill clock" id="clock" title="Advance the time (N)"></button>
+        <button class="pill audio" id="sound">
+          <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" shape-rendering="crispEdges">
+            <path d="M1 6h3l4-3v10l-4-3H1z" fill="currentColor" />
+            <path
+              class="on"
+              d="M10.5 5.5c1 1.4 1 3.6 0 5M12.5 3.5c2 2.5 2 6.5 0 9"
+              stroke="currentColor"
+              stroke-width="1.6"
+              fill="none"
+            />
+            <path class="off" d="M10.5 5.5l4 5M14.5 5.5l-4 5" stroke="currentColor" stroke-width="1.6" />
+          </svg>
+        </button>
+        <button class="pill audio" id="music">
+          <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" shape-rendering="crispEdges">
+            <path d="M5 2h9v2H5zM5 4h2v7H5zM1 10h6v4H1zM12 4h2v5h-2zM8 8h6v4H8z" fill="currentColor" />
+            <path class="off" d="M1.5 1.5l13 13" stroke="currentColor" stroke-width="1.6" />
+          </svg>
+        </button>
+        <span class="pill" id="progress"></span>
+        <button class="btn" data-open-cv><span class="wide">Text version</span><span class="narrow">CV</span></button>
+      </div>
+    </div>
+
+    <p class="hint">
+      <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> or arrows · <kbd>Shift</kbd> run · <kbd>Space</kbd> jump ·
+      <kbd>E</kbd> enter · <kbd>N</kbd> time · <kbd>M</kbd> sound · <kbd>B</kbd> music
+    </p>
+
+    <nav id="timeline" aria-label="Career">
+      <div class="track" id="timeline-track"><div class="dot" id="timeline-dot"></div></div>
+    </nav>
+
+    <div id="thought" class="thought" role="note" hidden>
+      <p class="thought-ghost" aria-hidden="true"></p>
+      <p class="thought-text" aria-hidden="true"></p>
+    </div>
+    <button id="prompt" class="prompt" hidden><kbd>E</kbd><span id="prompt-text"></span></button>
+    <div id="joystick" aria-hidden="true"><div class="knob"></div></div>
+
+    <div id="panel" class="overlay" role="dialog" aria-modal="true" hidden>
+      <article class="sheet">
+        <button class="close" data-close aria-label="Close">✕</button>
+        <div id="panel-body"></div>
+      </article>
+    </div>
+
+    <div id="cv" class="overlay" role="dialog" aria-modal="true" aria-label="Text version of the CV" hidden>
+      <article class="sheet sheet-wide" style="--c: #1d1f24">
+        <button class="close" data-close aria-label="Close">✕</button>
+        <div id="cv-body"></div>
+      </article>
+    </div>
+
+    <div id="arcade" class="overlay" role="dialog" aria-modal="true" aria-label="Arcade cabinet: Bug Invaders" hidden>
+      <article class="sheet arcade">
+        <button class="close" data-close aria-label="Close">✕</button>
+        <p class="arcade-marquee">Bug Invaders</p>
+        <div class="arcade-bezel">
+          <canvas class="arcade-screen" width="160" height="144" tabindex="-1" aria-label="Game screen"></canvas>
+        </div>
+        <div class="arcade-pad">
+          <button class="arcade-btn" data-pad="left" aria-label="Left">◀</button>
+          <button class="arcade-btn arcade-fire" data-pad="fire" aria-label="Fire">;</button>
+          <button class="arcade-btn" data-pad="right" aria-label="Right">▶</button>
+        </div>
+        <p class="arcade-help">
+          <kbd>A</kbd><kbd>D</kbd> or arrows move · <kbd>Space</kbd> fire · <kbd>E</kbd> play · <kbd>Esc</kbd> quit
+        </p>
+      </article>
+    </div>
+
+    <div id="start" class="start">
+      <div class="start-card">
+        <p class="start-kicker">Interactive CV</p>
+        <h1 data-name></h1>
+        <p class="start-title" data-title></p>
+        <p class="start-tagline" id="start-tagline"></p>
+        <ul class="keys">
+          <li>
+            <span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd></span> move
+          </li>
+          <li>
+            <span><kbd>Shift</kbd></span> run
+          </li>
+          <li>
+            <span><kbd>Space</kbd></span> jump
+          </li>
+          <li>
+            <span><kbd>E</kbd></span> enter
+          </li>
+        </ul>
+        <p class="touch-only">Use the joystick at the bottom left to walk, tap a building to open it.</p>
+        <div class="start-actions">
+          <button id="btn-start" class="btn btn-primary" disabled>Start ▶</button>
+          <button class="btn btn-ghost" data-open-cv>Text version</button>
+        </div>
+        <p class="loading" id="loading">Building the avenue…</p>
+      </div>
+    </div>
+
+    <div id="toast" class="toast" role="status"></div>
+  </body>
+</html>
